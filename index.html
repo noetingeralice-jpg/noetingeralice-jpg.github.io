@@ -47,9 +47,7 @@
     padding: 0 48px;
   }
   #menu-overlay.open { transform: translateX(0); }
-
   #menu-overlay nav { display: flex; flex-direction: column; }
-
   #menu-overlay nav a {
     color: #606060;
     text-decoration: none;
@@ -97,7 +95,6 @@
     cursor: pointer;
     background: #141414;
   }
-
   .photo-cell img {
     width: 100%;
     height: 100%;
@@ -106,19 +103,9 @@
     transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .photo-cell:hover img { transform: scale(1.05); }
+  .photo-placeholder { width: 100%; height: 100%; background: #141414; }
 
-  .photo-placeholder {
-    width: 100%;
-    height: 100%;
-    background: #141414;
-  }
-
-  .page {
-    display: none;
-    min-height: 100vh;
-    position: relative;
-    z-index: 1;
-  }
+  .page { display: none; min-height: 100vh; position: relative; z-index: 1; }
   .page.visible { display: block; }
 
   #page-bio {
@@ -152,7 +139,6 @@
     padding: 100px 60px 60px;
   }
   .page-serie.visible { display: flex; }
-
   .page-serie h1 {
     font-size: 10px;
     font-weight: 400;
@@ -170,7 +156,6 @@
     width: 100%;
     max-width: 780px;
   }
-
   .serie-cell {
     aspect-ratio: 3/4;
     overflow: hidden;
@@ -185,6 +170,7 @@
   }
   .serie-cell:hover img { transform: scale(1.05); }
 
+  /* ── LIGHTBOX ── */
   #lightbox {
     display: none;
     position: fixed;
@@ -193,24 +179,63 @@
     background: rgba(4,4,4,0.97);
     align-items: center;
     justify-content: center;
-    cursor: zoom-out;
   }
   #lightbox.open { display: flex; }
-  #lightbox img {
-    max-width: 88vw;
-    max-height: 88vh;
+
+  #lb-img-wrap {
+    position: relative;
+    width: calc(100vw - 120px);
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #lb-img {
+    max-width: 100%;
+    max-height: 90vh;
     object-fit: contain;
+    display: block;
+    transition: opacity 0.25s ease;
+  }
+
+  /* Navigation zones — left and right halves */
+  .lb-nav {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+  }
+  .lb-nav.prev { left: 0; justify-content: flex-start; padding-left: 28px; }
+  .lb-nav.next { right: 0; justify-content: flex-end; padding-right: 28px; }
+
+  .lb-arrow {
+    opacity: 0;
+    transition: opacity 0.2s ease;
     pointer-events: none;
   }
+  .lb-nav:hover .lb-arrow { opacity: 1; }
+
+  /* Stylised arrow — thin long line + short angled tip */
+  .lb-arrow svg {
+    width: 52px;
+    height: 18px;
+  }
+
   #lb-close {
     position: absolute;
     top: 26px; right: 30px;
-    color: #444;
+    color: #555;
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     cursor: pointer;
     transition: color 0.2s;
+    z-index: 210;
   }
   #lb-close:hover { color: #ddd; }
 </style>
@@ -218,23 +243,11 @@
 <body>
 
 <svg id="motif" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <path d="M 160 880
-            C 200 820, 260 760, 300 690
-            C 345 610, 320 530, 380 460
-            C 440 390, 530 375, 590 310
-            C 650 248, 640 165, 710 105
-            C 760 60, 840 38, 900 10"
+  <path d="M 160 880 C 200 820, 260 760, 300 690 C 345 610, 320 530, 380 460 C 440 390, 530 375, 590 310 C 650 248, 640 165, 710 105 C 760 60, 840 38, 900 10"
         fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-  <path d="M 210 880
-            C 252 818, 312 758, 354 688
-            C 400 608, 374 528, 436 458
-            C 498 388, 586 372, 648 308
-            C 708 246, 698 163, 768 103
-            C 818 58, 896 36, 958 8"
+  <path d="M 210 880 C 252 818, 312 758, 354 688 C 400 608, 374 528, 436 458 C 498 388, 586 372, 648 308 C 708 246, 698 163, 768 103 C 818 58, 896 36, 958 8"
         fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
-  <path d="M 110 880
-            C 145 828, 196 776, 228 712
-            C 256 654, 242 592, 272 538"
+  <path d="M 110 880 C 145 828, 196 776, 228 712 C 256 654, 242 592, 272 538"
         fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
   <path d="M 900 10 C 950 -12, 1010 0, 1048 32 C 1074 56, 1062 90, 1030 102"
         fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round"/>
@@ -244,18 +257,15 @@
   <path d="M 428 412 C 440 400, 456 400, 468 412" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
   <path d="M 466 378 C 478 366, 494 366, 506 378" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
   <path d="M 506 344 C 518 332, 534 332, 546 344" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-  <path d="M 1000 900
-            C 930 840, 870 760, 828 676
-            C 784 588, 798 498, 748 422
-            C 702 352, 608 328, 558 258
-            C 514 196, 526 112, 468 52"
+  <path d="M 1000 900 C 930 840, 870 760, 828 676 C 784 588, 798 498, 748 422 C 702 352, 608 328, 558 258 C 514 196, 526 112, 468 52"
         fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.35"/>
 </svg>
 
+<!-- CROIX — couleur plus claire -->
 <div id="menu-btn" role="button" aria-label="Menu" tabindex="0">
   <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-    <line x1="3" y1="13" x2="23" y2="13" stroke="#d0d0d0" stroke-width="1.8" stroke-linecap="round"/>
-    <line x1="13" y1="3" x2="13" y2="23" stroke="#d0d0d0" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="3" y1="13" x2="23" y2="13" stroke="#f0f0f0" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="13" y1="3" x2="13" y2="23" stroke="#f0f0f0" stroke-width="1.8" stroke-linecap="round"/>
   </svg>
 </div>
 
@@ -326,3 +336,132 @@
     <div class="serie-cell"><div class="photo-placeholder"></div></div>
     <div class="serie-cell"><div class="photo-placeholder"></div></div>
     <div class="serie-cell"><div class="photo-placeholder"></div></div>
+    <div class="serie-cell"><div class="photo-placeholder"></div></div>
+    <div class="serie-cell"><div class="photo-placeholder"></div></div>
+    <div class="serie-cell"><div class="photo-placeholder"></div></div>
+    <div class="serie-cell"><div class="photo-placeholder"></div></div>
+    <div class="serie-cell"><div class="photo-placeholder"></div></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <span id="lb-close">fermer</span>
+  <div id="lb-img-wrap">
+    <img id="lb-img" src="" alt="">
+
+    <!-- Flèche gauche -->
+    <div class="lb-nav prev" id="lb-prev">
+      <div class="lb-arrow">
+        <svg viewBox="0 0 52 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="51" y1="9" x2="1" y2="9" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
+          <polyline points="14,2 1,9 14,16" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Flèche droite -->
+    <div class="lb-nav next" id="lb-next">
+      <div class="lb-arrow">
+        <svg viewBox="0 0 52 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="1" y1="9" x2="51" y2="9" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
+          <polyline points="38,2 51,9 38,16" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const menuBtn = document.getElementById('menu-btn');
+  const menuOverlay = document.getElementById('menu-overlay');
+  const pageHome = document.getElementById('page-home');
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  let menuOpen = false;
+  let currentImages = [];
+  let currentIndex = 0;
+
+  function toggleMenu() {
+    menuOpen = !menuOpen;
+    menuBtn.classList.toggle('open', menuOpen);
+    menuOverlay.classList.toggle('open', menuOpen);
+  }
+
+  menuBtn.addEventListener('click', toggleMenu);
+  menuBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') toggleMenu(); });
+
+  document.addEventListener('click', e => {
+    if (menuOpen && !menuOverlay.contains(e.target) && !menuBtn.contains(e.target)) toggleMenu();
+  });
+
+  const navLinks = document.querySelectorAll('#menu-overlay nav a');
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.dataset.page;
+      pageHome.style.display = 'none';
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+      navLinks.forEach(l => l.classList.remove('active'));
+      if (target === 'home') {
+        pageHome.style.display = 'flex';
+      } else {
+        const page = document.getElementById('page-' + target);
+        if (page) page.classList.add('visible');
+      }
+      link.classList.add('active');
+      toggleMenu();
+    });
+  });
+
+  // Lightbox
+  function openLightbox(cells, index) {
+    currentImages = Array.from(cells).map(c => c.querySelector('img')).filter(Boolean);
+    if (!currentImages.length) return;
+    currentIndex = index;
+    showImage(currentIndex);
+    lightbox.classList.add('open');
+  }
+
+  function showImage(i) {
+    lbImg.style.opacity = '0';
+    setTimeout(() => {
+      lbImg.src = currentImages[i].src;
+      lbImg.style.opacity = '1';
+    }, 120);
+  }
+
+  function navigate(dir) {
+    currentIndex = (currentIndex + dir + currentImages.length) % currentImages.length;
+    showImage(currentIndex);
+  }
+
+  document.querySelectorAll('#grid .photo-cell').forEach((cell, i, all) => {
+    cell.addEventListener('click', () => openLightbox(all, i));
+  });
+
+  document.querySelectorAll('.serie-grid .serie-cell').forEach((cell, i, all) => {
+    cell.addEventListener('click', () => openLightbox(all, i));
+  });
+
+  document.getElementById('lb-prev').addEventListener('click', e => {
+    e.stopPropagation();
+    navigate(-1);
+  });
+
+  document.getElementById('lb-next').addEventListener('click', e => {
+    e.stopPropagation();
+    navigate(1);
+  });
+
+  document.getElementById('lb-close').addEventListener('click', () => lightbox.classList.remove('open'));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') lightbox.classList.remove('open');
+    if (e.key === 'ArrowLeft' && lightbox.classList.contains('open')) navigate(-1);
+    if (e.key === 'ArrowRight' && lightbox.classList.contains('open')) navigate(1);
+    if (e.key === 'Escape' && menuOpen) toggleMenu();
+  });
+</script>
+</body>
+</html>
