@@ -94,12 +94,17 @@
     overflow: hidden;
     cursor: pointer;
     background: #141414;
+    position: relative;
   }
   .photo-cell img {
     width: 100%;
     height: 100%;
+    max-width: 100%;
     object-fit: cover;
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
     transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .photo-cell:hover img { transform: scale(1.05); }
