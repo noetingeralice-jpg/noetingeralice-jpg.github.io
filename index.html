@@ -99,7 +99,6 @@
   .photo-cell img {
     width: 100%;
     height: 100%;
-    max-width: 100%;
     object-fit: cover;
     display: block;
     position: absolute;
@@ -108,7 +107,6 @@
     transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .photo-cell:hover img { transform: scale(1.05); }
-  .photo-placeholder { width: 100%; height: 100%; background: #141414; }
 
   .page { display: none; min-height: 100vh; position: relative; z-index: 1; }
   .page.visible { display: block; }
@@ -166,16 +164,20 @@
     overflow: hidden;
     background: #141414;
     cursor: pointer;
+    position: relative;
   }
   .serie-cell img {
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
     transition: transform 0.6s ease;
   }
   .serie-cell:hover img { transform: scale(1.05); }
 
-  /* ── LIGHTBOX ── */
   #lightbox {
     display: none;
     position: fixed;
@@ -204,7 +206,6 @@
     transition: opacity 0.25s ease;
   }
 
-  /* Navigation zones — left and right halves */
   .lb-nav {
     position: absolute;
     top: 0;
@@ -224,12 +225,7 @@
     pointer-events: none;
   }
   .lb-nav:hover .lb-arrow { opacity: 1; }
-
-  /* Stylised arrow — thin long line + short angled tip */
-  .lb-arrow svg {
-    width: 52px;
-    height: 18px;
-  }
+  .lb-arrow svg { width: 52px; height: 18px; }
 
   #lb-close {
     position: absolute;
@@ -248,25 +244,18 @@
 <body>
 
 <svg id="motif" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <path d="M 160 880 C 200 820, 260 760, 300 690 C 345 610, 320 530, 380 460 C 440 390, 530 375, 590 310 C 650 248, 640 165, 710 105 C 760 60, 840 38, 900 10"
-        fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-  <path d="M 210 880 C 252 818, 312 758, 354 688 C 400 608, 374 528, 436 458 C 498 388, 586 372, 648 308 C 708 246, 698 163, 768 103 C 818 58, 896 36, 958 8"
-        fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
-  <path d="M 110 880 C 145 828, 196 776, 228 712 C 256 654, 242 592, 272 538"
-        fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-  <path d="M 900 10 C 950 -12, 1010 0, 1048 32 C 1074 56, 1062 90, 1030 102"
-        fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round"/>
-  <path d="M 900 10 C 930 24, 960 48, 970 76"
-        fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 160 880 C 200 820, 260 760, 300 690 C 345 610, 320 530, 380 460 C 440 390, 530 375, 590 310 C 650 248, 640 165, 710 105 C 760 60, 840 38, 900 10" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 210 880 C 252 818, 312 758, 354 688 C 400 608, 374 528, 436 458 C 498 388, 586 372, 648 308 C 708 246, 698 163, 768 103 C 818 58, 896 36, 958 8" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 110 880 C 145 828, 196 776, 228 712 C 256 654, 242 592, 272 538" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 900 10 C 950 -12, 1010 0, 1048 32 C 1074 56, 1062 90, 1030 102" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M 900 10 C 930 24, 960 48, 970 76" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
   <path d="M 392 448 C 404 436, 420 436, 432 448" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
   <path d="M 428 412 C 440 400, 456 400, 468 412" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
   <path d="M 466 378 C 478 366, 494 366, 506 378" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
   <path d="M 506 344 C 518 332, 534 332, 546 344" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-  <path d="M 1000 900 C 930 840, 870 760, 828 676 C 784 588, 798 498, 748 422 C 702 352, 608 328, 558 258 C 514 196, 526 112, 468 52"
-        fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.35"/>
+  <path d="M 1000 900 C 930 840, 870 760, 828 676 C 784 588, 798 498, 748 422 C 702 352, 608 328, 558 258 C 514 196, 526 112, 468 52" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.35"/>
 </svg>
 
-<!-- CROIX — couleur plus claire -->
 <div id="menu-btn" role="button" aria-label="Menu" tabindex="0">
   <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
     <line x1="3" y1="13" x2="23" y2="13" stroke="#f0f0f0" stroke-width="1.8" stroke-linecap="round"/>
@@ -303,54 +292,50 @@
 
 <div id="page-bio" class="page">
   <h1>BIO_</h1>
-  <p>Née à Pau en 1999. 
-     <p>Alice Limborg-Noetinger étudie les lettres et la philosophie à la Sorbonne, puis à l'ENS / EHESS. Ayant vécu à Paris, Prague puis Mexico city, elle développe alors une pratique de la photographie, avec une approche conjuguant le documentaire et l'expérimentation.</p>
- <p>Sa pratique photographique s'entrelace avec la découverte du Mexique et de ses nombreuses cultures. Elle explore sa relation à la mort et l'empreinte qu'a eu son passé préhispanique sur sa vie contemporaine, ses fantômes et sa mémoire.</p>
- <p>publications</p>
- <p>_chair_2026_</p>
- <p>_Opium Philosophie_Tisser_2024_</p>
- <p></p>
- <p>contactez-moi pour recevoir l'intégralité de mon travail</p>
- <p>noetinger.alice@gmail.com</p>
- <p>@alice_limborg_noet</p>
- <p>+33 6 41 53 04 70</p>
- <p>_ENGLISH_</p>
- <p>Born in Pau (South of France) in 1999.</p>
- <p></p>
- <p>Alice Limborg-Noetinger studied literature and philosophy at the Sorbonne, and then at l'ENS / EHESS. After a few years in Paris, Prague and Mexico city, she delved into photography trying to conjugate documentary photography and Fine art.</p>
- <p>Her artistic practice is strongly embedded with the discovery of Mexico and its numerous cultures. She explores its relationship to death and the imprint that its prehispanic life has within contemporary days, its ghosts and its remembrance.</p> 
- <p>publications</p>
- <p>_chair_2026_</p>
- <p>_Opium Philosophie_Tisser_2024_</p>
- <p></p>
+  <p>Née à Pau en 1999.</p>
+  <p>Alice Limborg-Noetinger étudie les lettres et la philosophie à la Sorbonne, puis à l'ENS / EHESS. Ayant vécu à Paris, Prague puis Mexico city, elle développe alors une pratique de la photographie, avec une approche conjuguant le documentaire et l'expérimentation.</p>
+  <p>Sa pratique photographique s'entrelace avec la découverte du Mexique et de ses nombreuses cultures. Elle explore sa relation à la mort et l'empreinte qu'a eu son passé préhispanique sur sa vie contemporaine, ses fantômes et sa mémoire.</p>
+  <p>publications</p>
+  <p>_chair_2026_</p>
+  <p>_Opium Philosophie_Tisser_2024_</p>
+  <p>contactez-moi pour recevoir l'intégralité de mon travail</p>
+  <p>noetinger.alice@gmail.com</p>
+  <p>@alice_limborg_noet</p>
+  <p>+33 6 41 53 04 70</p>
+  <p>_ENGLISH_</p>
+  <p>Born in Pau (South of France) in 1999.</p>
+  <p>Alice Limborg-Noetinger studied literature and philosophy at the Sorbonne, and then at l'ENS / EHESS. After a few years in Paris, Prague and Mexico city, she delved into photography trying to conjugate documentary photography and Fine art.</p>
+  <p>Her artistic practice is strongly embedded with the discovery of Mexico and its numerous cultures. She explores its relationship to death and the imprint that its prehispanic life has within contemporary days, its ghosts and its remembrance.</p>
+  <p>publications</p>
+  <p>_chair_2026_</p>
+  <p>_Opium Philosophie_Tisser_2024_</p>
 </div>
 
 <div id="page-serie1" class="page page-serie">
-  <h1>Série I</h1>
   <h1>TEOTIHUACAN</h1>
   <div class="serie-grid">
-    <div class="photo-cell"><img src="r001-002 - recadrée - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="r001-003 rec - 500k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="r001-005 - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="r001-012 - copie - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="r001-014 - copie - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="r001-015 - copie - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="r001-019 - copie - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="r001-023 - copie - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-002 - recadrée - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-003 rec - 500k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-005 - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-012 - copie - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-014 - copie - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-015 - copie - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-019 - copie - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="r001-023 - copie - 400k.jpg" alt=""></div>
   </div>
 </div>
 
 <div id="page-serie2" class="page page-serie">
   <h1>Série II</h1>
   <div class="serie-grid">
-    <div class="photo-cell"><img src="Photo09_10 - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="Photo21_22 - 400k tata.jpg" alt=""></div>
-    <div class="photo-cell"><img src="Photo19_20 - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="DSC_0226 - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="DSC_0230 - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="Photo07_7 - 400k.jpg" alt=""></div>
-    <div class="photo-cell"><img src="Photo21_22 - 400k barb.jpg" alt=""></div>
-    <div class="photo-cell"><img src="Photo11_11 - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="Photo09_10 - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="Photo21_22 - 400k tata.jpg" alt=""></div>
+    <div class="serie-cell"><img src="Photo19_20 - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="DSC_0226 - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="DSC_0230 - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="Photo07_7 - 400k.jpg" alt=""></div>
+    <div class="serie-cell"><img src="Photo21_22 - 400k barb.jpg" alt=""></div>
+    <div class="serie-cell"><img src="Photo11_11 - 400k.jpg" alt=""></div>
   </div>
 </div>
 
@@ -361,33 +346,28 @@
     <div class="serie-cell"><img src="13-8ab25.jpg" alt=""></div>
     <div class="serie-cell"><img src="31-8ab25.jpg" alt=""></div>
     <div class="serie-cell"><img src="35-8ab25.jpg" alt=""></div>
-    <div class="serie-cell"><img src="16-8ab25.jpg" alt="></div>
+    <div class="serie-cell"><img src="16-8ab25.jpg" alt=""></div>
     <div class="serie-cell"><img src="14-8ab25.jpg" alt=""></div>
-    <div class="serie-cell"><img src="00-8ab25.jpg" alt=""></div><
-    <div class="serie-cell"><img src="28-8ab25 - 400k.jpg" alt="></div>
+    <div class="serie-cell"><img src="00-8ab25.jpg" alt=""></div>
+    <div class="serie-cell"><img src="28-8ab25 - 400k.jpg" alt=""></div>
   </div>
 </div>
 
-<!-- LIGHTBOX -->
 <div id="lightbox">
   <span id="lb-close">fermer</span>
   <div id="lb-img-wrap">
     <img id="lb-img" src="" alt="">
-
-    <!-- Flèche gauche -->
     <div class="lb-nav prev" id="lb-prev">
       <div class="lb-arrow">
-        <svg viewBox="0 0 52 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 52 18" fill="none">
           <line x1="51" y1="9" x2="1" y2="9" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
           <polyline points="14,2 1,9 14,16" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
     </div>
-
-    <!-- Flèche droite -->
     <div class="lb-nav next" id="lb-next">
       <div class="lb-arrow">
-        <svg viewBox="0 0 52 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 52 18" fill="none">
           <line x1="1" y1="9" x2="51" y2="9" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
           <polyline points="38,2 51,9 38,16" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -438,7 +418,6 @@
     });
   });
 
-  // Lightbox
   function openLightbox(cells, index) {
     currentImages = Array.from(cells).map(c => c.querySelector('img')).filter(Boolean);
     if (!currentImages.length) return;
